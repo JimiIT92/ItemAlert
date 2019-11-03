@@ -1,0 +1,17 @@
+{
+  "minecraft:diamond_pickaxe": {
+    "ENABLED": true,
+    "DURABILITY": 100,
+    "TYPE": "SOUND"
+  },
+  "minecraft:iron_sword": {
+    "ENABLED": true,
+    "DURABILITY": 1,
+    "TYPE": "HOTBAR"
+  },
+  "minecraft:diamond_sword": {
+    "ENABLED": true,
+    "DURABILITY": 150,
+    "TYPE": "CHAT"
+  }
+}
