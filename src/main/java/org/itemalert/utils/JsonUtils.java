@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * JSON Utility class
+ *
  * @author JimiIT92
  */
 public class JsonUtils {
@@ -28,56 +30,13 @@ public class JsonUtils {
     }
 
     /**
-     * Parse a Json String to a Class
-     *
-     * @param reader Json reader
-     * @param clazz  Class instance
-     * @param <T>    Class type
-     * @return Parsed Json
-     */
-    public static <T> T parse(BufferedReader reader, Class<T> clazz) {
-        return new Gson().fromJson(reader, clazz);
-    }
-
-    /**
-     * Serialize a Class to a JSON String
-     *
-     * @param clazz Class to Serialize
-     * @param <T>   Class Type
-     * @return JSON String
-     */
-    public static <T> String serialize(T clazz) {
-        return getGson().toJson(clazz);
-    }
-
-    /**
-     * Get a GSON instance
-     *
-     * @return GSON Instance
-     */
-    private static Gson getGson() {
-        return new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-    }
-
-    /**
      * Serialize an HashMap to a JSON string
      *
      * @param map HashMap
      * @return JSON string
      */
     static <K, V> String serializeMap(HashMap map) {
-        return getGson().toJson(map, new TypeToken<Map<K, V>>() {
-        }.getType());
-    }
-
-    /**
-     * Deserialize an HashMap
-     *
-     * @param json JSON string
-     * @return HashMap
-     */
-    public static <K, V> HashMap<K, V> deserializeMap(String json) {
-        return new Gson().fromJson(json, new TypeToken<Map<K, V>>() {
+        return new GsonBuilder().setPrettyPrinting().serializeNulls().create().toJson(map, new TypeToken<Map<K, V>>() {
         }.getType());
     }
 
@@ -87,9 +46,8 @@ public class JsonUtils {
      * @param json      JSON string
      * @param directory Directory
      * @param file      File
-     * @return True if the file has been saved, false otherwise
      */
-    static boolean saveToFile(String json, File directory, File file) {
+    static void saveToFile(String json, File directory, File file) {
         FileWriter fileWriter = null;
         try {
             if (!directory.exists()) {
@@ -102,7 +60,6 @@ public class JsonUtils {
             fileWriter.write(json);
         } catch (IOException ex) {
             LogUtils.getLogger().error(Arrays.toString(ex.getStackTrace()));
-            return false;
         } finally {
             if (fileWriter != null) {
                 try {
@@ -112,9 +69,14 @@ public class JsonUtils {
                 }
             }
         }
-        return true;
     }
 
+    /**
+     * Load a JSON string from a File
+     *
+     * @param file File
+     * @return JSON string
+     */
     static String loadFromFile(File file) {
         if (!file.exists()) {
             return null;

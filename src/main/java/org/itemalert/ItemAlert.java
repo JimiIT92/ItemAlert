@@ -1,25 +1,37 @@
 package org.itemalert;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import org.itemalert.commands.*;
+import org.itemalert.commands.arguments.AlertDefaultArgument;
+import org.itemalert.commands.arguments.AlertItemArgument;
+import org.itemalert.model.AlertType;
+import org.itemalert.model.EnumOperation;
 import org.itemalert.settings.PluginSettings;
 import org.itemalert.settings.Settings;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.text.Text;
 
 import java.nio.file.Path;
 
 /**
- * Main Plugin Class
+ * Item Alert Main Class
  */
 @Plugin(id = PluginSettings.ID,
         name = PluginSettings.NAME,
@@ -58,6 +70,23 @@ public class ItemAlert {
     private PluginContainer pluginContainer;
 
     /**
+     * Constructor
+     *
+     * @param logger          Logger Instance
+     * @param loader          Configuration Loader Instance
+     * @param configDirectory Configuration Directory
+     * @param game            Game Instance
+     * @param pluginContainer Plugin Container Instance
+     */
+    public ItemAlert(Logger logger, ConfigurationLoader<CommentedConfigurationNode> loader, Path configDirectory, Game game, PluginContainer pluginContainer) {
+        this.logger = logger;
+        this.loader = loader;
+        this.configDirectory = configDirectory;
+        this.game = game;
+        this.pluginContainer = pluginContainer;
+    }
+
+    /**
      * Plugin pre-initialization. Loads the settings
      *
      * @param event GamePreInitializationEvent
@@ -69,6 +98,55 @@ public class ItemAlert {
     }
 
     /**
+     * Plugin initialization. Register the commands
+     *
+     * @param event GameInitializationEvent
+     */
+    @Listener
+    public void onGameInitialization(GameInitializationEvent event) {
+        CommandSpec itemAlertHelpSpec = CommandSpec.builder()
+                .executor(new ItemAlertHelpExecutor())
+                .build();
+
+        CommandSpec itemAlertAddSpec = CommandSpec.builder()
+                .arguments(GenericArguments.catalogedElement(Text.of("item"), ItemType.class),
+                        GenericArguments.integer(Text.of("durability")),
+                        GenericArguments.optional(GenericArguments.enumValue(Text.of("alertType"), AlertType.class)))
+                .executor(new ItemAlertAddExecutor())
+                .build();
+
+        CommandSpec itemAlertRemoveSpec = CommandSpec.builder()
+                .executor(new ItemAlertRemoveExecutor())
+                .arguments(new AlertItemArgument(Text.of("item")))
+                .build();
+
+        CommandSpec itemDefaultSpec = CommandSpec.builder()
+                .executor(new ItemDefaultAlertExecutor())
+                .permission(Settings.ITEM_ALERT_PERMISSION)
+                .arguments(GenericArguments.enumValue(Text.of("operation"), EnumOperation.class),
+                        new AlertDefaultArgument(Text.of("item")),
+                        GenericArguments.optional(GenericArguments.integer(Text.of("durability"))),
+                        GenericArguments.optional(GenericArguments.enumValue(Text.of("alertType"), AlertType.class)))
+                .build();
+
+        CommandSpec itemReloadSpec = CommandSpec.builder()
+                .executor(new ItemAlertReloadExecutor())
+                .permission(Settings.ITEM_ALERT_PERMISSION)
+                .build();
+
+        CommandSpec.Builder itemAlertSpec = CommandSpec.builder()
+                .child(itemAlertHelpSpec, "help")
+                .child(itemReloadSpec, "reload")
+                .child(itemDefaultSpec, "default");
+
+        if (Settings.ALLOW_PLAYERS_OVERRIDE) {
+            itemAlertSpec.child(itemAlertAddSpec, "add").child(itemAlertRemoveSpec, "remove");
+        }
+
+        Sponge.getCommandManager().register(this, itemAlertSpec.build(), Lists.newArrayList("itemAlert", "ia"));
+    }
+
+    /**
      * Plugin post-initialization. Check for updates
      *
      * @param event GamePostInitializationEvent
@@ -76,11 +154,11 @@ public class ItemAlert {
     @Listener
     public void onGamePostInitialization(GamePostInitializationEvent event) {
         Settings.checkForUpdates();
-        Settings.checkDurabilities();
+        Settings.checkDurability();
     }
 
     /**
-     * Initialize Plugin
+     * Server started. Logs that the plugin has been initialized
      *
      * @param event Game Started Server Event
      */

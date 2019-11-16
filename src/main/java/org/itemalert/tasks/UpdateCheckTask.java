@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 /**
+ * Check if Plugin Updates are availables
+ *
  * @author JimiIT92
  */
 public class UpdateCheckTask implements Consumer<Task> {
@@ -25,6 +27,11 @@ public class UpdateCheckTask implements Consumer<Task> {
      */
     private static final String DOWNLOAD_URL = "https://ore.spongepowered.org/Francesco_Jimi/ItemAlert/versions/";
 
+    /**
+     * Check for Updates
+     *
+     * @param task Task to execute
+     */
     @Override
     public void accept(Task task) {
         try {

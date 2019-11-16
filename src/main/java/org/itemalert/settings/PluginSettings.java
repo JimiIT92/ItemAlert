@@ -1,6 +1,8 @@
 package org.itemalert.settings;
 
 /**
+ * Plugin Settings
+ *
  * @author JimiIT92
  */
 public class PluginSettings {

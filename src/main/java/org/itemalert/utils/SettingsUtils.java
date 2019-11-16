@@ -13,14 +13,31 @@ import java.util.Arrays;
 import java.util.Optional;
 
 /**
+ * Settings Utility class
+ *
  * @author JimiIT92
  */
 public class SettingsUtils {
 
+    /**
+     * Load a ConfigurationNode from a file
+     *
+     * @param plugin   Plugin Instance
+     * @param fileName File name
+     * @return ConfigurationNode
+     */
     public static ConfigurationNode load(ItemAlert plugin, String fileName) {
         return load(plugin, fileName, true);
     }
 
+    /**
+     * Load a ConfigurationNode from a file
+     *
+     * @param plugin         Plugin Instance
+     * @param fileName       File name
+     * @param includeVersion If version should be included in the Settings file
+     * @return ConfigurationNode
+     */
     static ConfigurationNode load(ItemAlert plugin, String fileName, boolean includeVersion) {
         String ext = fileName.substring(fileName.lastIndexOf('.') + 1);
         String configFileName = fileName;

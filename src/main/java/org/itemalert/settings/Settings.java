@@ -15,6 +15,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Settings
+ *
  * @author JimiIT92
  */
 public class Settings {
@@ -43,7 +45,20 @@ public class Settings {
      * How often the alert should be fired
      */
     private static Pair<Integer, TimeUnit> ALERT_FREQUENCY;
+    /**
+     * Permission for changing default Item Alerts
+     */
+    public static String ITEM_ALERT_PERMISSION;
+    /**
+     * If Players can set their own rules
+     */
+    public static boolean ALLOW_PLAYERS_OVERRIDE;
 
+    /**
+     * Initialize the Settings
+     *
+     * @param plugin Plugin Instance
+     */
     public static void init(ItemAlert plugin) {
         PLUGIN = plugin;
         LogUtils.init(plugin);
@@ -59,6 +74,8 @@ public class Settings {
         ConfigurationNode MAIN_NODE = SettingsUtils.load(PLUGIN, PluginSettings.ID);
         assert MAIN_NODE != null;
         PLUGIN_VERSION = MAIN_NODE.getNode("_version").getFloat();
+        ITEM_ALERT_PERMISSION = MAIN_NODE.getNode("item_alert_permission").getString();
+        ALLOW_PLAYERS_OVERRIDE = MAIN_NODE.getNode("allow_players_override").getBoolean();
         ConfigurationNode updateNode = MAIN_NODE.getNode("update_check");
         CHECK_UPDATES = updateNode.getNode("check").getBoolean();
         UPDATE_CHECK_FREQUENCY = new Pair<>(updateNode.getNode("time").getInt(), TimeUnit.valueOf(Objects.requireNonNull(updateNode.getNode("unit").getString()).toUpperCase()));
@@ -75,7 +92,19 @@ public class Settings {
         }
     }
 
-    public static void checkDurabilities() {
+    /**
+     * Start the Check Durability Task
+     */
+    public static void checkDurability() {
         TASK_BUILDER.execute(new DurabilityCheckTask()).async().delay(1, TimeUnit.SECONDS).interval(ALERT_FREQUENCY.getKey(), ALERT_FREQUENCY.getValue()).submit(PLUGIN);
+    }
+
+    /**
+     * Get the Plugin Instance
+     *
+     * @return Plugin Instance
+     */
+    public static ItemAlert getPlugin() {
+        return PLUGIN;
     }
 }
