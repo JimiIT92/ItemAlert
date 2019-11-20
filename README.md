@@ -1,3 +1,12 @@
 # ItemAlert
-Get an alert sound when a Tool is about to break!
  
+<img src="logo.png" alt="Item Alert Icon" style="float: left; margin-right: 10px;" />
+
+## NEVER LOST YOUR ITEMS AGAIN!
+
+Item Alert comes at your help!
+Have you ever lost your favorite tool while mining, fighting, fishing etc... and wondered about a way to avoid this?
+A way to get you noticed that your favorite item is about to break?
+Well, YOU WON'T ANYMORE!
+
+Learn more about it in the [Documentation](https://jimiit92.github.io/ItemAlert/)
