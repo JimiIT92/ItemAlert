@@ -1,6 +1,6 @@
 # ItemAlert
  
-<img src="logo.png" alt="Item Alert Icon" style="float: center; margin-right: 10px;" width=50% height=50% />
+<img src="logo.png" alt="Item Alert Icon" style="float: center; margin-right: 10px;" width=25% height=50% />
 
 ## NEVER LOST YOUR ITEMS AGAIN!
 
